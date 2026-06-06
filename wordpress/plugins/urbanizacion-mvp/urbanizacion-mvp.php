@@ -265,6 +265,95 @@ add_action('admin_init', 'umvp_block_admin');
 
 
 /* ===========================================================================
+ * 3d. Experiencia del vecino: redirección de acceso y página "Mi cuenta"
+ * ========================================================================= */
+
+// Tras iniciar sesión, los vecinos van a Anuncios; los administradores, al panel.
+function umvp_login_redirect($redirect_to, $requested, $user) {
+    if (!($user instanceof WP_User)) return $redirect_to;
+    if (user_can($user, 'manage_options')) return $redirect_to;
+    if (empty($requested) || strpos($requested, '/wp-admin') !== false) {
+        return get_post_type_archive_link('announcement') ?: home_url('/');
+    }
+    return $requested;
+}
+add_filter('login_redirect', 'umvp_login_redirect', 10, 3);
+
+// Procesa el formulario de "Mi cuenta" (nombre y contraseña) en el front-end.
+function umvp_handle_profile() {
+    if (empty($_POST['umvp_perfil_submit']) || !is_user_logged_in()) return;
+    if (!isset($_POST['umvp_perfil_nonce']) || !wp_verify_nonce($_POST['umvp_perfil_nonce'], 'umvp_perfil')) return;
+
+    $user_id = get_current_user_id();
+    $args    = ['ID' => $user_id];
+    $flag    = 'ok';
+
+    $name = isset($_POST['umvp_display_name']) ? sanitize_text_field(wp_unslash($_POST['umvp_display_name'])) : '';
+    if ($name !== '') $args['display_name'] = $name;
+
+    $p1 = isset($_POST['umvp_pass1']) ? (string) $_POST['umvp_pass1'] : '';
+    $p2 = isset($_POST['umvp_pass2']) ? (string) $_POST['umvp_pass2'] : '';
+    if ($p1 !== '' || $p2 !== '') {
+        if ($p1 !== $p2)            $flag = 'passmismatch';
+        elseif (strlen($p1) < 6)    $flag = 'passshort';
+        else                        $args['user_pass'] = $p1;
+    }
+
+    if ($flag === 'ok') {
+        wp_update_user($args);
+        if (isset($args['user_pass'])) {           // mantener la sesión tras cambiar la clave
+            wp_clear_auth_cookie();
+            wp_set_current_user($user_id);
+            wp_set_auth_cookie($user_id, true);
+        }
+    }
+    wp_safe_redirect(add_query_arg('perfil', $flag, wp_get_referer() ?: home_url('/mi-cuenta/')));
+    exit;
+}
+add_action('template_redirect', 'umvp_handle_profile');
+
+// Shortcode [urbanizacion_perfil] para la página "Mi cuenta".
+function umvp_profile_shortcode() {
+    if (!is_user_logged_in()) {
+        return '<p>Debes <a href="' . esc_url(wp_login_url(home_url('/mi-cuenta/'))) . '">iniciar sesión</a> para ver tu cuenta.</p>';
+    }
+    $u   = wp_get_current_user();
+    $msg = '';
+    if (isset($_GET['perfil'])) {
+        $map = [
+            'ok'           => ['ok',    'Datos guardados correctamente.'],
+            'passmismatch' => ['error', 'Las contraseñas no coinciden.'],
+            'passshort'    => ['error', 'La contraseña debe tener al menos 6 caracteres.'],
+        ];
+        $f = sanitize_key($_GET['perfil']);
+        if (isset($map[$f])) {
+            $msg = '<div class="umvp-aviso umvp-' . $map[$f][0] . '">' . esc_html($map[$f][1]) . '</div>';
+        }
+    }
+
+    ob_start();
+    echo $msg;
+    ?>
+    <form method="post" class="umvp-perfil">
+        <?php wp_nonce_field('umvp_perfil', 'umvp_perfil_nonce'); ?>
+        <p><label>Usuario</label><input type="text" value="<?php echo esc_attr($u->user_login); ?>" disabled></p>
+        <p><label>Correo</label><input type="email" value="<?php echo esc_attr($u->user_email); ?>" disabled></p>
+        <p><label for="umvp_display_name">Nombre visible</label>
+           <input type="text" id="umvp_display_name" name="umvp_display_name" value="<?php echo esc_attr($u->display_name); ?>"></p>
+        <hr>
+        <p><label for="umvp_pass1">Nueva contraseña</label>
+           <input type="password" id="umvp_pass1" name="umvp_pass1" autocomplete="new-password" placeholder="(dejar en blanco para no cambiarla)"></p>
+        <p><label for="umvp_pass2">Repetir contraseña</label>
+           <input type="password" id="umvp_pass2" name="umvp_pass2" autocomplete="new-password"></p>
+        <p><button type="submit" name="umvp_perfil_submit" value="1" class="btn">Guardar cambios</button></p>
+    </form>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('urbanizacion_perfil', 'umvp_profile_shortcode');
+
+
+/* ===========================================================================
  * 4. Contenido inicial (se ejecuta una sola vez, al activar el plugin)
  *
  * Crea las páginas básicas, fija la portada y construye el menú principal.
@@ -379,10 +468,34 @@ function umvp_seed_content() {
  * 5. Activación
  * ========================================================================= */
 
+// Idempotente: crea la página "Mi cuenta" y elimina el contenido de ejemplo de WordPress.
+function umvp_extra_setup() {
+
+    if (!get_page_by_path('mi-cuenta')) {
+        wp_insert_post([
+            'post_title'   => 'Mi cuenta',
+            'post_name'    => 'mi-cuenta',
+            'post_content' => '[urbanizacion_perfil]',
+            'post_status'  => 'publish',
+            'post_type'    => 'page',
+        ]);
+    }
+
+    // Páginas de ejemplo (slug en inglés o español).
+    foreach (['sample-page', 'pagina-ejemplo'] as $slug) {
+        if ($p = get_page_by_path($slug)) wp_trash_post($p->ID);
+    }
+    // Entrada "Hello world!" / "¡Hola, mundo!".
+    foreach (['hello-world', 'hola-mundo'] as $slug) {
+        if ($p = get_page_by_path($slug, OBJECT, 'post')) wp_trash_post($p->ID);
+    }
+}
+
 function umvp_activate() {
     umvp_post_types();
     umvp_create_roles();
     umvp_seed_content();
+    umvp_extra_setup();
 
     // Registro abierto, pero los nuevos usuarios quedan pendientes de aprobación.
     update_option('users_can_register', 1);

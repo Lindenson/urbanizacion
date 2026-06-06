@@ -302,6 +302,21 @@ p { margin: 0 0 1em; }
 .wp-block-gallery img { border-radius: 10px; width: 100%; object-fit: cover; }
 
 /* ===========================================================================
+   Formulario "Mi cuenta"
+   ========================================================================= */
+.umvp-perfil { max-width: 480px; }
+.umvp-perfil label { display: block; font-weight: 600; margin-bottom: .25rem; }
+.umvp-perfil input {
+    width: 100%; padding: .6rem .8rem; font: inherit; background: #fff;
+    border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem;
+}
+.umvp-perfil input:disabled { background: #f3ece1; color: var(--muted); }
+.umvp-perfil hr { border: 0; border-top: 1px solid var(--border); margin: .5rem 0 1.25rem; }
+.umvp-aviso { padding: .8rem 1rem; border-radius: 8px; margin-bottom: 1.25rem; }
+.umvp-ok    { background: #e7f3ec; border: 1px solid #b6dcc4; color: #256b42; }
+.umvp-error { background: #fbeaea; border: 1px solid #e3b4b4; color: #9b2c2c; }
+
+/* ===========================================================================
    Pie de página
    ========================================================================= */
 .site-footer {

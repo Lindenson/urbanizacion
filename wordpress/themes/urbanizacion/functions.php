@@ -40,6 +40,24 @@ function urb_assets() {
 }
 add_action('wp_enqueue_scripts', 'urb_assets');
 
+/* Quitar recursos innecesarios del <head> (emojis, oEmbed, meta sobrante) -- */
+function urb_trim_head() {
+    // Emojis
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('admin_print_styles', 'print_emoji_styles');
+    // Descubrimiento oEmbed (no se usa)
+    remove_action('wp_head', 'wp_oembed_add_discovery_links');
+    remove_action('wp_head', 'wp_oembed_add_host_js');
+    // Meta-etiquetas innecesarias
+    remove_action('wp_head', 'rsd_link');
+    remove_action('wp_head', 'wlwmanifest_link');
+    remove_action('wp_head', 'wp_generator');
+    remove_action('wp_head', 'wp_shortlink_wp_head');
+}
+add_action('init', 'urb_trim_head');
+
 /* Imagen del héroe: portada del tema o imagen destacada ------------------- */
 function urb_hero_image_url() {
     if (has_header_image()) {
@@ -64,6 +82,7 @@ add_filter('excerpt_more', 'urb_excerpt_more');
 function urb_menu_auth_item($items, $args) {
     if (isset($args->theme_location) && $args->theme_location === 'primary') {
         if (is_user_logged_in()) {
+            $items .= '<li class="menu-item"><a href="' . esc_url(home_url('/mi-cuenta/')) . '">Mi cuenta</a></li>';
             $items .= '<li class="menu-item menu-item-auth"><a href="' . esc_url(wp_logout_url(home_url('/'))) . '">Salir</a></li>';
         } else {
             $items .= '<li class="menu-item menu-item-auth"><a href="' . esc_url(wp_login_url(home_url('/'))) . '">Acceder</a></li>';
