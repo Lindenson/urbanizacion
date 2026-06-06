@@ -1,0 +1,51 @@
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: urbanizacion-db
+    restart: always
+
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wpuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wppassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+
+  wordpress:
+
+    image: wordpress:latest
+    container_name: urbanizacion-wp
+    restart: always
+
+    ports:
+      - "${WP_PORT:-5000}:80"
+
+    environment:
+
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: ${MYSQL_USER:-wpuser}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-wppassword}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-wordpress}
+
+    volumes:
+
+      - wordpress_data:/var/www/html
+
+      # наш плагин
+      - ./wordpress/plugins/urbanizacion-mvp:/var/www/html/wp-content/plugins/urbanizacion-mvp
+
+      # наша тема
+      - ./wordpress/themes/urbanizacion:/var/www/html/wp-content/themes/urbanizacion
+
+    depends_on:
+      - db
+
+
+volumes:
+
+  mysql_data:
+  wordpress_data:

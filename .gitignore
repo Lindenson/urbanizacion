@@ -1,0 +1,14 @@
+# Variables de entorno locales (contraseñas)
+.env
+
+# Paquetes generados para subir al hosting
+/dist/
+
+# Núcleo de WordPress y datos (viven en volúmenes de Docker)
+/wordpress/wp-content/uploads/
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+*.log
+*~
