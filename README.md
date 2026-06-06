@@ -57,7 +57,9 @@ Para parar: `docker compose down` (los datos se conservan en los volúmenes).
 
 > Para producción, copia `.env.example` a `.env` y cambia las contraseñas.
 
-Para publicarlo en un hosting de WordPress, consulta **[DESPLIEGUE.md](DESPLIEGUE.md)**.
+Para publicarlo en un hosting de WordPress, consulta **[DESPLIEGUE.md](DESPLIEGUE.md)**
+(instalar el código). Para llevarte además **el contenido que ya tienes**
+(publicaciones, fotos, foro y tu cuenta), consulta **[MIGRACION.md](MIGRACION.md)**.
 
 ---
 
@@ -114,7 +116,9 @@ abrir temas en las dos secciones. Como administrador eres *keymaster* (control t
 docker-compose.yaml                         Stack local (MySQL + WordPress)
 .env.example                                Variables (copiar a .env)
 DESPLIEGUE.md                               Guía para hosting
-tools/package.sh                            Genera los ZIP para subir al hosting
+tools/package.sh                            Genera los ZIP del tema y el plugin
+tools/backup.sh                             Exporta base de datos + uploads (migración)
+MIGRACION.md                                Guía para migrar el contenido al hosting
 wordpress/
   plugins/urbanizacion-mvp/                 Plugin (funcionalidad)
   themes/urbanizacion/                      Tema (diseño)

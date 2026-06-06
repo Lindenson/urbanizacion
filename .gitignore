@@ -4,6 +4,9 @@
 # Paquetes generados para subir al hosting
 /dist/
 
+# Copias de seguridad / exportaciones (contienen datos de usuarios)
+/backup/
+
 # Núcleo de WordPress y datos (viven en volúmenes de Docker)
 /wordpress/wp-content/uploads/
 
