@@ -60,6 +60,19 @@ add_filter('excerpt_length', 'urb_excerpt_length');
 function urb_excerpt_more($more) { return '…'; }
 add_filter('excerpt_more', 'urb_excerpt_more');
 
+/* Añadir "Salir" / "Acceder" al menú principal ---------------------------- */
+function urb_menu_auth_item($items, $args) {
+    if (isset($args->theme_location) && $args->theme_location === 'primary') {
+        if (is_user_logged_in()) {
+            $items .= '<li class="menu-item menu-item-auth"><a href="' . esc_url(wp_logout_url(home_url('/'))) . '">Salir</a></li>';
+        } else {
+            $items .= '<li class="menu-item menu-item-auth"><a href="' . esc_url(wp_login_url(home_url('/'))) . '">Acceder</a></li>';
+        }
+    }
+    return $items;
+}
+add_filter('wp_nav_menu_items', 'urb_menu_auth_item', 10, 2);
+
 /* Una tarjeta para los listados ------------------------------------------- */
 function urb_card() { ?>
     <article class="card">

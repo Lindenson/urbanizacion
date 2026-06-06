@@ -241,6 +241,30 @@ add_action('admin_notices', 'umvp_pending_notice');
 
 
 /* ===========================================================================
+ * 3c. Ocultar el escritorio (wp-admin) y la barra de administración
+ *
+ * Los vecinos (y los pendientes) no gestionan el sitio: no deben ver el panel
+ * de WordPress ni la barra negra superior. Solo quien puede editar contenido
+ * (administrador) conserva el acceso al escritorio.
+ * ========================================================================= */
+
+// Ocultar la barra superior a quien no gestiona contenido.
+function umvp_hide_admin_bar($show) {
+    return current_user_can('edit_posts') ? $show : false;
+}
+add_filter('show_admin_bar', 'umvp_hide_admin_bar');
+
+// Bloquear el acceso a /wp-admin/ (salvo peticiones AJAX) y enviar a la portada.
+function umvp_block_admin() {
+    if (!current_user_can('edit_posts') && !wp_doing_ajax()) {
+        wp_safe_redirect(home_url('/'));
+        exit;
+    }
+}
+add_action('admin_init', 'umvp_block_admin');
+
+
+/* ===========================================================================
  * 4. Contenido inicial (se ejecuta una sola vez, al activar el plugin)
  *
  * Crea las páginas básicas, fija la portada y construye el menú principal.

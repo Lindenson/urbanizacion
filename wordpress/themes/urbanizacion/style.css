@@ -136,6 +136,13 @@ p { margin: 0 0 1em; }
     border-bottom-color: var(--primary);
 }
 
+/* "Salir" / "Acceder" destacado al final del menú */
+.main-nav .menu-item-auth a {
+    color: var(--primary);
+    font-weight: 600;
+}
+.main-nav .menu-item-auth a:hover { color: var(--primary-dark); }
+
 .nav-toggle {
     display: none;
     background: none;
