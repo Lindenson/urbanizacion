@@ -11,6 +11,10 @@ El proyecto se compone de dos piezas propias:
   control de acceso y registro con aprobación.
 - **Tema** `urbanizacion` — el diseño (terracota, azul mediterráneo, arena).
 
+> 🚀 **¿Quieres publicarlo en internet?** Sigue la
+> **[Guía de hosting: de GitHub a tu sitio publicado](GUIA-HOSTING.md)**
+> (paso a paso, con ejemplo gratuito en InfinityFree).
+
 ---
 
 ## Características
@@ -57,9 +61,11 @@ Para parar: `docker compose down` (los datos se conservan en los volúmenes).
 
 > Para producción, copia `.env.example` a `.env` y cambia las contraseñas.
 
-Para publicarlo en un hosting de WordPress, consulta **[DESPLIEGUE.md](DESPLIEGUE.md)**
-(instalar el código). Para llevarte además **el contenido que ya tienes**
-(publicaciones, fotos, foro y tu cuenta), consulta **[MIGRACION.md](MIGRACION.md)**.
+Para publicarlo en un hosting de WordPress, la guía recomendada y completa es
+**[GUIA-HOSTING.md](GUIA-HOSTING.md)** (de GitHub a tu sitio publicado).
+Como referencia, hay además dos documentos más detallados:
+**[DESPLIEGUE.md](DESPLIEGUE.md)** (instalar el código) y
+**[MIGRACION.md](MIGRACION.md)** (migrar el contenido).
 
 ---
 
@@ -115,7 +121,8 @@ abrir temas en las dos secciones. Como administrador eres *keymaster* (control t
 ```
 docker-compose.yaml                         Stack local (MySQL + WordPress)
 .env.example                                Variables (copiar a .env)
-DESPLIEGUE.md                               Guía para hosting
+GUIA-HOSTING.md                             Guía completa: de GitHub al sitio publicado
+DESPLIEGUE.md                               Referencia: instalar el código en hosting
 tools/package.sh                            Genera los ZIP del tema y el plugin
 tools/backup.sh                             Exporta base de datos + uploads (migración)
 MIGRACION.md                                Guía para migrar el contenido al hosting
