@@ -233,7 +233,8 @@ p { margin: 0 0 1em; }
 .card__title a:hover { color: var(--primary); text-decoration: none; }
 .card__meta { font-size: .85rem; color: var(--muted); margin: 0; }
 .card__excerpt { color: var(--muted); font-size: .95rem; margin: 0; }
-.card__more { margin-top: auto; font-weight: 600; color: var(--secondary); }
+.card__more { margin-top: auto; font-weight: 600; color: var(--secondary); text-decoration: none; align-self: flex-start; }
+.card__more:hover { color: var(--secondary-dark); text-decoration: none; transform: translateX(2px); }
 
 /* Accesos rápidos */
 .quicklinks { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1.25rem; }

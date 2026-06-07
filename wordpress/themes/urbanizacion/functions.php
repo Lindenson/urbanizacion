@@ -105,7 +105,7 @@ function urb_card() { ?>
             <h3 class="card__title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
             <p class="card__meta"><?php echo esc_html(get_the_date()); ?></p>
             <p class="card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22, '…')); ?></p>
-            <span class="card__more">Leer más →</span>
+            <a class="card__more" href="<?php the_permalink(); ?>">Leer más →</a>
         </div>
     </article>
 <?php }
